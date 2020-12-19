@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 
 function useLocalStorage(key, initialData) {
   const [value, setValue] = useState(
-    JSON.parse(localStorage.getItem("todos")) || initialData
+    JSON.parse(localStorage.getItem(key)) || initialData
   );
 
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(value));
+    localStorage.setItem(key, JSON.stringify(value));
   }, [key, value]);
 
   return [value, setValue];
