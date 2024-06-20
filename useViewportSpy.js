@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const defaultOptions = {
   root: undefined,
@@ -6,27 +6,20 @@ const defaultOptions = {
   threshold: 0,
 };
 
-const useViewportSpy = (elementRef, options = defaultOptions) => {
-  const [isVisible, setIsVisible] = useState();
+export const useViewportSpy = (options = defaultOptions) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const elementRef = useRef(null);
 
-  useLayoutEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((item) => {
-          const nextValue = item.isIntersecting;
-          setIsVisible(nextValue);
-        }),
-      options
-    );
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      setIsVisible(entry.isIntersecting);
+    }, options);
 
     observer.observe(elementRef.current);
 
-    return () => {
-      observer.disconnect(elementRef.current);
-    };
-  }, [elementRef]);
+    return () => observer.disconnect();
+  }, [elementRef, options]);
 
-  return isVisible;
+  return { isVisible, elementRef };
 };
-
-export default useViewportSpy;
